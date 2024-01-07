@@ -50,8 +50,8 @@ jobs:
     #Push NuGet package to GitHub packages
     - name: Download nuget package artifact
       uses: actions/download-artifact@v1.0.0
-      with:
-        name: nugetPackage
+      #with:
+      #  name: nugetPackage
     - name: Prep packages
       run: dotnet nuget add source --username elima --password ${{ secrets.NUGET_PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/elima/index.json"
     - name: Push package to GitHub packages 
