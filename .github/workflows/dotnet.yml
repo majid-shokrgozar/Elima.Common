@@ -35,6 +35,13 @@ jobs:
         dotnet-version: 8.0.x
     - name: Build and Pack NuGet package
       run: dotnet pack -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
+
+    - name: Prep packages
+      run: dotnet nuget add source --username elima --password ${{ secrets.NUGET_PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/elima/index.json"
+    - name: Push package to GitHub packages 
+      if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
+      run: dotnet nuget push nugetPackage/*.nupkg --api-key ${{ secrets.NUGET_PACKAGE_TOKEN }}  --source "github"
+
     - name: Upload NuGet package to GitHub
       uses: actions/upload-artifact@v2
       with:
@@ -50,8 +57,8 @@ jobs:
     #Push NuGet package to GitHub packages
     - name: Download nuget package artifact
       uses: actions/download-artifact@v1.0.0
-      #with:
-      #  name: nugetPackage
+      with:
+        name: nugetPackage
     - name: Prep packages
       run: dotnet nuget add source --username elima --password ${{ secrets.NUGET_PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/elima/index.json"
     - name: Push package to GitHub packages 
