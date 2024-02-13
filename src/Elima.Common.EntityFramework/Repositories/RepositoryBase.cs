@@ -1,5 +1,6 @@
 ﻿using Elima.Common.Domain.Entities;
 using Elima.Common.Domain.Entities.Auditing.Contracts;
+using Elima.Common.EntityFramework.Data;
 using Elima.Common.System.Linq;
 using JetBrains.Annotations;
 using System;
@@ -11,20 +12,12 @@ using System.Threading.Tasks;
 
 namespace Elima.Common.EntityFramework.Repositories;
 
-public abstract class RepositoryBase<TEntity> : BasicRepositoryBase<TEntity>, IRepository<TEntity>
+public abstract class RepositoryBase<TEntity> :  IRepository<TEntity>
     where TEntity : class, IEntity
 {
-    [Obsolete("Use WithDetailsAsync method.")]
-    public virtual IQueryable<TEntity> WithDetails()
-    {
-        return GetQueryable();
-    }
 
-    [Obsolete("Use WithDetailsAsync method.")]
-    public virtual IQueryable<TEntity> WithDetails(params Expression<Func<TEntity, object>>[] propertySelectors)
-    {
-        return GetQueryable();
-    }
+    public IServiceProvider ServiceProvider { get; set; } = default!;
+    public IDataFilter DataFilter { get; set; } = default!;
 
     public virtual Task<IQueryable<TEntity>> WithDetailsAsync()
     {
@@ -36,9 +29,6 @@ public abstract class RepositoryBase<TEntity> : BasicRepositoryBase<TEntity>, IR
         return GetQueryableAsync();
     }
 
-    [Obsolete("Use GetQueryableAsync method.")]
-    protected abstract IQueryable<TEntity> GetQueryable();
-
     public abstract Task<IQueryable<TEntity>> GetQueryableAsync();
 
     public abstract Task<TEntity?> FindAsync(
@@ -46,7 +36,7 @@ public abstract class RepositoryBase<TEntity> : BasicRepositoryBase<TEntity>, IR
         bool includeDetails = true,
         CancellationToken cancellationToken = default);
 
-    public abstract Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, bool autoSave = false, CancellationToken cancellationToken = default);
+    public abstract Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
     public abstract Task DeleteDirectAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
@@ -66,6 +56,20 @@ public abstract class RepositoryBase<TEntity> : BasicRepositoryBase<TEntity>, IR
 
         return query;
     }
+
+    public abstract Task<List<TEntity>> GetListAsync([NotNull] Expression<Func<TEntity, bool>> predicate, bool includeDetails = false, CancellationToken cancellationToken = default);
+
+    public abstract Task<TEntity> InsertAsync([NotNull] TEntity entity, CancellationToken cancellationToken = default);
+
+    public abstract Task<TEntity> UpdateAsync([NotNull] TEntity entity, CancellationToken cancellationToken = default);
+
+    public abstract Task DeleteAsync([NotNull] TEntity entity, CancellationToken cancellationToken = default);
+
+    public abstract Task<List<TEntity>> GetListAsync(bool includeDetails = false, CancellationToken cancellationToken = default);
+
+    public abstract Task<long> GetCountAsync(CancellationToken cancellationToken = default);
+    
+    public abstract Task<List<TEntity>> GetPagedListAsync(int skipCount, int maxResultCount, string sorting, bool includeDetails = false, CancellationToken cancellationToken = default);
 }
 
 public abstract class RepositoryBase<TEntity, TKey> : RepositoryBase<TEntity>, IRepository<TEntity, TKey>
@@ -75,7 +79,7 @@ public abstract class RepositoryBase<TEntity, TKey> : RepositoryBase<TEntity>, I
 
     public abstract Task<TEntity?> FindAsync(TKey id, bool includeDetails = true, CancellationToken cancellationToken = default);
 
-    public virtual async Task DeleteAsync(TKey id, bool autoSave = false, CancellationToken cancellationToken = default)
+    public virtual async Task DeleteAsync(TKey id, CancellationToken cancellationToken = default)
     {
         var entity = await FindAsync(id, cancellationToken: cancellationToken);
         if (entity == null)
@@ -83,19 +87,7 @@ public abstract class RepositoryBase<TEntity, TKey> : RepositoryBase<TEntity>, I
             return;
         }
 
-        await DeleteAsync(entity, autoSave, cancellationToken);
+        await DeleteAsync(entity, cancellationToken);
     }
 
-    public async Task DeleteManyAsync([NotNull] IEnumerable<TKey> ids, bool autoSave = false, CancellationToken cancellationToken = default)
-    {
-        foreach (var id in ids)
-        {
-            await DeleteAsync(id, cancellationToken: cancellationToken);
-        }
-
-        if (autoSave)
-        {
-            await SaveChangesAsync(cancellationToken);
-        }
-    }
 }

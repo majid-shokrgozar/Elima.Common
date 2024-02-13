@@ -27,8 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Elima.Common.Application.MediatR\Elima.Common.Application.MediatR.csproj" />
-    <ProjectReference Include="..\..\Elima.Common.Result.AspNetCore\Elima.Common.Results.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Elima.Common.Domain\Elima.Common.Domain.csproj" />
     <ProjectReference Include="..\..\src\Elima.Common.EntityFramework\Elima.Common.EntityFramework.csproj" />
     <ProjectReference Include="..\..\src\Elima.Common.Security\Elima.Common.Security.csproj" />

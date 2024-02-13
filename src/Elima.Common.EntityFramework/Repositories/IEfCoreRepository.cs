@@ -8,12 +8,6 @@ namespace Elima.Common.EntityFramework.Repositories;
 public interface IEfCoreRepository<TEntity> : IRepository<TEntity>
     where TEntity : class, IEntity
 {
-    [Obsolete("Use GetDbContextAsync() method.")]
-    DbContext DbContext { get; }
-
-    [Obsolete("Use GetDbSetAsync() method.")]
-    DbSet<TEntity> DbSet { get; }
-
     Task<DbContext> GetDbContextAsync();
 
     Task<DbSet<TEntity>> GetDbSetAsync();

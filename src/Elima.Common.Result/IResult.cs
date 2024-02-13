@@ -9,9 +9,18 @@ public interface IResult
     IReadOnlyList<ValidationError> ValidationError { get; }
     IReadOnlyList<Error> Errors { get; }
     public Error? Error { get; }
+
+    public bool IsSuccess { get; }
+    public bool IsFailure { get; }
 }
 
 public interface IResultWithValue : IResult
 {
     object? GetValue();
+}
+
+
+public interface IResultWithValue<out TValue> : IResultWithValue
+{
+    public TValue Value { get; }
 }

@@ -13,7 +13,7 @@ public abstract class CreationAuditedEntity : Entity, ICreationAuditedObject
     public virtual DateTime CreationTime { get; protected set; }
 
     /// <inheritdoc />
-    public virtual Guid? CreatorId { get; protected set; }
+    public virtual string? CreatorId { get; protected set; }
 }
 
 /// <summary>
@@ -22,12 +22,13 @@ public abstract class CreationAuditedEntity : Entity, ICreationAuditedObject
 /// <typeparam name="TKey">Type of the primary key of the entity</typeparam>
 [Serializable]
 public abstract class CreationAuditedEntity<TKey> : Entity<TKey>, ICreationAuditedObject
+      where TKey : notnull
 {
     /// <inheritdoc />
     public virtual DateTime CreationTime { get; protected set; }
 
     /// <inheritdoc />
-    public virtual Guid? CreatorId { get; protected set; }
+    public virtual string? CreatorId { get; protected set; }
 
     protected CreationAuditedEntity()
     {

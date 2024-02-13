@@ -8,24 +8,12 @@ namespace Elima.Common.EntityFramework.Repositories;
 
 public static class EfCoreRepositoryExtensions
 {
-    [Obsolete("Use GetDbContextAsync method.")]
-    public static DbContext GetDbContext<TEntity>(this IReadOnlyBasicRepository<TEntity> repository)
-        where TEntity : class, IEntity
-    {
-        return repository.ToEfCoreRepository().DbContext;
-    }
+
 
     public static Task<DbContext> GetDbContextAsync<TEntity>(this IReadOnlyBasicRepository<TEntity> repository)
         where TEntity : class, IEntity
     {
         return repository.ToEfCoreRepository().GetDbContextAsync();
-    }
-
-    [Obsolete("Use GetDbSetAsync method.")]
-    public static DbSet<TEntity> GetDbSet<TEntity>(this IReadOnlyBasicRepository<TEntity> repository)
-        where TEntity : class, IEntity
-    {
-        return repository.ToEfCoreRepository().DbSet;
     }
 
     public static Task<DbSet<TEntity>> GetDbSetAsync<TEntity>(this IReadOnlyBasicRepository<TEntity> repository)
